@@ -1,6 +1,7 @@
 import logging
 import sys
 import warnings
+import os
 
 from pathlib import Path
 from transformers import (
@@ -11,11 +12,13 @@ from transformers import (
     DataCollatorWithPadding
 )
 
+
 root_path = Path(__file__).resolve().parent.parent
 filename = Path(__file__).stem
 sys.path.append(str(root_path))
 warnings.filterwarnings('ignore')
-
+os.environ['WANDB_DISABLED'] = 'true'
+ 
 from data.data_init import (
     model_checkpoint,
     get_tokenized_data,
@@ -48,8 +51,9 @@ def main():
     train_args = TrainingArguments(
         str(Path(root_path) / 'checkpoints'),
         eval_strategy = 'steps',
-        eval_steps = 10,
-        logging_dir = str(Path(root_path) / 'logs')
+        eval_steps = 1000,
+        logging_dir = str(Path(root_path) / 'logs'),
+        report_to = []
     )
 
     # Trainer for model

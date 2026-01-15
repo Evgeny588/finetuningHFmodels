@@ -5,7 +5,9 @@ __pycache__/
 
 # C extensions
 *.so
-
+# Custom directories
+logs/
+tmp_trainer/
 # Distribution / packaging
 .Python
 build/

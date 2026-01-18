@@ -72,10 +72,10 @@ def main():
 
     train_data = train_data.to_tf_dataset(
         batch_size = batch_size,
-        shuffle = False,
+        shuffle = True,
         collate_fn = collator,
         columns = ['input_ids', 'token_type_ids', 'attention_mask'],
-        label_cols = ['label']
+        label_cols = 'label'
     ).prefetch(tf.data.AUTOTUNE)
 
     val_data = val_data.to_tf_dataset(

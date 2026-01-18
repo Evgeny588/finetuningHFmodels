@@ -46,10 +46,6 @@ def parse_args():
     )
     return parser.parse_args()
 
-args = parse_args()
-device = args.device
-num_workers = 0 if device != 'cuda' else os.cpu_count()
-pin_memory = num_workers != 0
 
 
 # Setup logging
@@ -57,6 +53,12 @@ setup_logging()
 logging = logging.getLogger(str(filename))
 
 def main():
+    # Parse and set some arguments
+    args = parse_args()
+    device = args.device
+    num_workers = 0 if device != 'cuda' else os.cpu_count()
+    pin_memory = num_workers != 0
+
     # Init model
     model = BertForSequenceClassification.from_pretrained(model_checkpoint)
 

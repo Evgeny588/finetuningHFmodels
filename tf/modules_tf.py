@@ -3,6 +3,7 @@ import keras
 import logging
 import sys
 from pathlib import Path
+from tqdm.auto import tqdm
 
 root_path = Path(__file__).resolve().parent.parent
 filename = Path(__file__).stem
@@ -20,7 +21,7 @@ def train_loop(model, optimizer, loss_fn, metric, train_data, verbose: bool = Tr
     train_losses = 0.0
     train_batch_counter = 0
 
-    for inputs, targets in train_data:
+    for inputs, targets in tqdm(train_data):
         input_ids = inputs['input_ids']
         attention_masks = inputs['attention_mask']
         token_type_ids = inputs['token_type_ids']

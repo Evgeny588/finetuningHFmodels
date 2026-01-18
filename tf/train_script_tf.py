@@ -1,6 +1,7 @@
 import sys
 import logging
 import argparse
+import warnings
 
 import tensorflow as tf
 from transformers import (
@@ -8,19 +9,22 @@ from transformers import (
     AutoTokenizer,
     DataCollatorWithPadding
 )
+from tqdm.auto import tqdm
 import keras
 from pathlib import Path
 root_path = Path(__file__).resolve().parent.parent
 filename = Path(__file__).stem
 sys.path.append(str(root_path))
+warnings.filterwarnings('ignore')
 from data.data_init import (
     get_tokenized_data,
-    model_checkpoint,
-    
+    model_checkpoint 
     )
+from tf.modules_tf import train_loop, validation_loop
 from set_logging import setup_logging
+
 setup_logging()
-logging = logging.getLogger(filename)
+logger = logging.getLogger(filename)
 
 
 
@@ -38,7 +42,7 @@ def parse_args():
     parser.add_argument(
         '--lr',
         type = float,
-        default = 1e-02
+        default = 1e-05
     )
 
     parser.add_argument(
@@ -93,7 +97,23 @@ def main():
     accuracy = keras.metrics.SparseCategoricalAccuracy()
 
     # Learning cycle
-    
+    for epoch in tqdm(range(epochs), desc = 'Epoch progress', leave = False):
+        logger.info(f'=========EPOCH: {epoch + 1}/{epochs}==========')
+        # Train cycle
+        train_loss, train_acc = train_loop(
+            model = model,
+            optimizer = optimizer,
+            loss_fn = criterion,
+            metric = accuracy,
+            train_data = train_data
+        )
+        eval_loss, eval_acc = validation_loop(
+            model = model,
+            loss_fn = criterion,
+            metric = accuracy,
+            validation_data = val_data
+        )
+
 
 
 if __name__ == '__main__':

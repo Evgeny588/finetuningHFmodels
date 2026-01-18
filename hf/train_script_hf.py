@@ -32,9 +32,6 @@ logging = logging.getLogger(filename)
 
 # Main code
 def main():
-    # Used library
-    library = 'pt'
-
     # Model initialize
     model = BertForSequenceClassification.from_pretrained(model_checkpoint)
     logging.debug(f'Model {model_checkpoint} was initialized.')

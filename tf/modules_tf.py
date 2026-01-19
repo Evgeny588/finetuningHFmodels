@@ -21,7 +21,7 @@ def train_loop(model, optimizer, loss_fn, metric, train_data, verbose: bool = Tr
     train_losses = 0.0
     train_batch_counter = 0
 
-    for inputs, targets in tqdm(train_data):
+    for inputs, targets in tqdm(train_data, desc = 'Train loop', leave = False):
         input_ids = inputs['input_ids']
         attention_masks = inputs['attention_mask']
         token_type_ids = inputs['token_type_ids']
@@ -44,13 +44,50 @@ def train_loop(model, optimizer, loss_fn, metric, train_data, verbose: bool = Tr
         metric.update_state(targets, logits)
         
         train_losses += loss
-        train_batch_counter += input_ids.shape[0]
+        train_batch_counter += 1
 
     epoch_loss = train_losses / train_batch_counter
     epoch_accuracy = metric.result()
     
     if verbose:
-        logger.info(f'Loss: {epoch_loss: .4f}')
-        logger.info(f'Accuracy: {epoch_accuracy: .4f}')
+        logger.info(f'Train_loss: {epoch_loss: .4f}')
+        logger.info(f'Train_accuracy: {epoch_accuracy: .4f}')
 
     return epoch_loss, epoch_accuracy
+
+
+def validation_loop(model, loss_fn, metric, validation_data, verbose: bool = True):
+    # Batch loop
+    metric.reset_state()
+    eval_losses = 0.0
+    eval_batch_counter = 0
+
+    for inputs, targets in tqdm(validation_data, desc = 'Eval loop', leave = False):
+        input_ids = inputs['input_ids']
+        token_type_ids = inputs['token_type_ids']
+        attention_masks = inputs['attention_mask']
+
+        logits = model(
+            input_ids = input_ids,
+            token_type_ids = token_type_ids,
+            attention_mask = attention_masks
+        ).logits
+        
+        loss = loss_fn(
+            targets,
+            logits
+        )
+
+        metric.update_state(targets, logits)
+        eval_losses += loss
+        eval_batch_counter += 1 
+
+    epoch_loss = eval_losses / eval_batch_counter
+    epoch_accuracy = metric.result()
+
+    if verbose:
+        logger.info(f'Validation_loss: {epoch_loss: .4f}')
+        logger.info(f'Validation_metric: {epoch_accuracy: .4f}')
+        
+    return epoch_loss, epoch_accuracy
+

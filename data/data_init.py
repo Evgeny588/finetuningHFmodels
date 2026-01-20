@@ -20,8 +20,8 @@ def get_tokenized_data():
     train = dataset['train']
     val = dataset['validation']
 
-    tokenized_train = train.map(tokenize_func, remove_columns = ['sentence'], load_from_cache_file = False) 
-    tokenized_val = val.map(tokenize_func, remove_columns = ['sentence'], load_from_cache_file = False)
+    tokenized_train = train.map(tokenize_func, remove_columns = ['sentence', 'idx'], load_from_cache_file = False) 
+    tokenized_val = val.map(tokenize_func, remove_columns = ['sentence', 'idx'], load_from_cache_file = False)
     return tokenized_train, tokenized_val
 
 def main():

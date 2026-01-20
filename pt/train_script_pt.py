@@ -69,7 +69,7 @@ def main():
 
     # Init model
     model = BertForSequenceClassification.from_pretrained(model_checkpoint)
-
+    model = model.to(device)
     # Init common classes
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
     collator = DataCollatorWithPadding(tokenizer)
@@ -80,7 +80,7 @@ def main():
     # Create DataLoaders
     train_loader = DataLoader(
         train_data,
-        batch_size = args.bs,
+        batch_size = args.batch_size,
         shuffle = False,
         num_workers = num_workers,
         collate_fn = collator,
@@ -88,7 +88,7 @@ def main():
         )
     val_loader = DataLoader(
         dataset = val_data,
-        batch_size = args.bs,
+        batch_size = args.batch_size,
         shuffle = False,
         num_workers = num_workers,
         collate_fn = collator,
@@ -119,3 +119,5 @@ def main():
     losses['Val'] = val_losses
     torch.save(losses, Path(root_path) / 'checkpoints/losses.pt')
 
+if __name__ == '__main__':
+    main()

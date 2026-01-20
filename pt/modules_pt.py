@@ -24,16 +24,11 @@ def one_epoch(model, optimizer, loss_fn, train_loader, val_loader, device, epoch
     batch_counter = 0
 
     # Loop
-    for inputs, target in tqdm(train_loader, desc = 'Train_loop', leave = False):
+    for inputs in tqdm(train_loader, desc = 'Train_loop', leave = False):
         inputs = {k: v.to(device) for k, v in inputs.items()}  
-        target = target.to(device) #Move tensors to enable device
         
         # Forward pass
-        logits = model(**inputs).logits
-        loss = loss_fn(
-            logits,
-            target
-        )
+        loss = model(**inputs).loss
 
         # Backward pass
         optimizer.zero_grad()
@@ -55,8 +50,7 @@ def one_epoch(model, optimizer, loss_fn, train_loader, val_loader, device, epoch
             val_loader = val_loader,
             device = device
         )
-    else:
-        val_epoch_loss = None
+      
     return train_epoch_loss, val_epoch_loss
 
 
@@ -67,17 +61,13 @@ def validation_cycle(model, loss_fn, val_loader, device):
     batch_counter = 0
 
     # Loop
-    for inputs, target in tqdm(val_loader, desc = 'Val_loop', leave = False):
+    for inputs in tqdm(val_loader, desc = 'Val_loop', leave = False):
         inputs = {k: v.to(device) for k, v in inputs.items()}
-        target = target.to(device)
 
         # Validation pass
         with torch.no_grad():
-            logits = model(**inputs).logits
-            loss = loss_fn(
-                logits,
-                target
-            )
+            loss = model(**inputs).loss
+
         # Cumulative
         current_loss += loss.item()
         batch_counter += 1

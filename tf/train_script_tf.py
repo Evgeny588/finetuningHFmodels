@@ -63,7 +63,10 @@ def main():
     epochs = args.epochs
 
     # Init model and other classes
-    model = TFBertForSequenceClassification.from_pretrained(model_checkpoint)
+    model = TFBertForSequenceClassification.from_pretrained(
+        model_checkpoint,
+        from_pt = True,
+        use_safetensors = False)
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
     collator = DataCollatorWithPadding(tokenizer)
 
